@@ -1,0 +1,11 @@
+name = AddThis
+core = 7.x
+package = Configs
+dependencies[] = addthis
+dependencies[] = addthis_displays
+dependencies[] = ctools
+dependencies[] = strongarm
+features[ctools][] = strongarm:strongarm:1
+features[features_api][] = api:2
+features[variable][] = addthis_block_widget_settings
+features[variable][] = addthis_block_widget_type

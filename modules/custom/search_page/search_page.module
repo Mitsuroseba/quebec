@@ -1,0 +1,59 @@
+<?php
+/**
+ * @file
+ * Search Page.
+ */
+
+/**
+ * Implements hook_views_api().
+ */
+function search_page_views_api() {
+  return ['api' => 3];
+}
+
+/**
+ * Implements hook_theme().
+ */
+function search_page_theme($existing, $type, $theme, $path) {
+  $info = [];
+
+  $info['search_page'] = [
+    'render element' => 'elements',
+  ];
+
+  return $info;
+}
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function search_page_entity_info_alter(array &$entity_info) {
+  $entity_info['node']['view modes']['search_result'] = [
+    'label' => t('Search result'),
+    'custom settings' => TRUE,
+  ];
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function search_page_form_views_exposed_form_alter(array &$form, array &$form_state) {
+  // View was set before.
+  // @see views_content_views_panes_content_type_edit_form()
+  if (isset($form['search_api_views_fulltext'])) {
+    switch ($form_state['view']->name) {
+      case 'search_results':
+        // Exposed form will be processed as AJAX if form element will be
+        // found by ID. To prevent AJAX calls for "search_results"
+        // form ID should be edited.
+        // @see Drupal.views.ajaxView()
+        $form['#id'] = 'prevent-ajax--' . $form['#id'];
+        $form['search_api_views_fulltext']['#attributes']['placeholder'] = t('Enter a search term');
+        break;
+
+      case 'view_questions_and_answers':
+        $form['search_api_views_fulltext']['#attributes']['placeholder'] = t('Enter your keyword here');
+        break;
+    }
+  }
+}

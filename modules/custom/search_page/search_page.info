@@ -1,0 +1,5 @@
+name = Search Page
+package = FFW
+core = 7.x
+
+files[] = includes/views_handler_area_search_result.inc

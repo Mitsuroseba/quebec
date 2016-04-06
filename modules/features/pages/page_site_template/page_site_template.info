@@ -1,0 +1,12 @@
+name = Site template
+core = 7.x
+package = Pages
+dependencies[] = ctools
+dependencies[] = page_manager
+dependencies[] = strongarm
+features[ctools][] = page_manager:pages_default:1
+features[ctools][] = strongarm:strongarm:1
+features[features_api][] = api:2
+features[page_manager_handlers][] = site_template__front-page-site-template
+features[page_manager_handlers][] = site_template__panel_context_aad6a33b-68da-460f-adaa-a0eb394fdda2
+features[variable][] = panels_everywhere_site_template_enabled

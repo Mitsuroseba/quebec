@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the AddThis feature.
+ */
+
+include_once 'config_addthis.features.inc';

@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Skyscraber banners feature.
+ */
+
+include_once 'mini_panel_skyscraber_banners.features.inc';

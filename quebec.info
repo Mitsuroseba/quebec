@@ -1,0 +1,81 @@
+name = Quebec
+description = Instalation profile.
+ore = 7.x
+
+; Core
+
+dependencies[] = list
+dependencies[] = image
+dependencies[] = field
+dependencies[] = block
+dependencies[] = number
+dependencies[] = comment
+dependencies[] = taxonomy
+
+; Contrib
+
+; Sandboxes
+
+;dependencies[] = uuid_features_menu
+
+; Custom
+
+dependencies[] = golfbox
+dependencies[] = plugins
+dependencies[] = functions
+dependencies[] = formatters
+dependencies[] = search_page
+dependencies[] = admin_customizations
+dependencies[] = facetapi_templatable_links
+dependencies[] = improved_comment
+
+; Features
+
+; Menu
+
+dependencies[] = menu_main_menu
+
+; Mini panels
+
+dependencies[] = mini_panel_header
+dependencies[] = mini_panel_footer
+dependencies[] = mini_panel_search_facets
+dependencies[] = mini_panel_tabs
+dependencies[] = mini_panel_skyscraber_banners
+
+; Pages
+
+dependencies[] = page_faq
+dependencies[] = page_blog
+dependencies[] = page_front
+dependencies[] = page_search
+dependencies[] = page_site_template
+dependencies[] = page_manager_hero_spot
+
+; Views
+
+dependencies[] = view_link
+dependencies[] = view_blog
+dependencies[] = view_article
+dependencies[] = view_search_results
+dependencies[] = view_questions_and_answers
+
+; Configs
+
+dependencies[] = config_user
+dependencies[] = config_search
+dependencies[] = config_metatag
+dependencies[] = config_addthis
+dependencies[] = config_autoarch
+dependencies[] = config_security
+dependencies[] = config_languages
+dependencies[] = config_node_export
+dependencies[] = config_permissions
+dependencies[] = config_translation
+dependencies[] = config_image_styles
+dependencies[] = config_text_formats
+dependencies[] = config_date_formats
+dependencies[] = config_uuid_features
+dependencies[] = config_jquery_version
+dependencies[] = config_ckeditor_profiles
+dependencies[] = config_entity_view_modes

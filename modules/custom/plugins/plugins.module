@@ -1,0 +1,12 @@
+<?php
+/**
+ * @file
+ * Plugins.
+ */
+
+/**
+ * Implements hook_views_api().
+ */
+function plugins_views_api() {
+  return ['api' => 3];
+}

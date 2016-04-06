@@ -1,0 +1,41 @@
+<?php
+/**
+ * @file
+ * Facetapi template.
+ */
+
+/**
+ * Implements hook_facetapi_widgets().
+ */
+function facetapi_templatable_links_facetapi_widgets() {
+  $info = [];
+
+  $info['facetapi_templatable_links'] = [
+    'handler' => [
+      'label' => t('Templatable links'),
+      'class' => 'FacetapiWidgets\TemplatableLinks',
+      'query types' => ['term', 'date'],
+    ],
+  ];
+
+  return $info;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function facetapi_templatable_links_theme(array $existing, $type, $theme, $path) {
+  $info = [];
+
+  $info['facetapi_templatable_links'] = [
+    'variables' => [
+      'items' => [],
+      'title' => '',
+    ],
+    // TODO Add opportunity to use couple variants.
+    'template' => 'facetapi-templatable-links',
+    'path' => $path . '/templates',
+  ];
+
+  return $info;
+}

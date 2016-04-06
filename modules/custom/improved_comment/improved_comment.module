@@ -1,0 +1,25 @@
+<?php
+/**
+ * @file
+ * Improved comment.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function improved_comment_theme() {
+  $info = [];
+
+  $info['comment_form'] = [
+    'render element' => 'form',
+  ];
+
+  return $info;
+}
+
+/**
+ * Implements hook_comment_view_alter().
+ */
+function improved_comment_comment_view_alter(&$build) {
+  unset($build['#prefix']);
+}

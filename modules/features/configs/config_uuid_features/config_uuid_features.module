@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the UUID Features feature.
+ */
+
+include_once 'config_uuid_features.features.inc';

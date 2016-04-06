@@ -1,0 +1,9 @@
+name = Facetapi templatable links
+description = Allow to customize facetapi links block.
+package = Search
+core = 7.x
+php = 5.4
+
+autoload[plugins][] = FacetapiWidgets
+
+dependencies[] = facetapi

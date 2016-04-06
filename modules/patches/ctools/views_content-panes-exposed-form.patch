@@ -1,0 +1,119 @@
+diff --git a/views_content/plugins/content_types/views_panes.inc b/views_content/plugins/content_types/views_panes.inc
+index e4dded2..38fa10d 100644
+--- a/views_content/plugins/content_types/views_panes.inc
++++ b/views_content/plugins/content_types/views_panes.inc
+@@ -498,64 +498,80 @@ function views_content_views_panes_content_type_edit_form($form, &$form_state) {
+   }
+ 
+   if ($allow['exposed_form']) {
++    form_load_include($form_state, 'inc', 'views_content', 'plugins/content_types/views_panes');
++
+     // If the exposed form is part of pane configuration, get the exposed
+     // form re-tool it for our use.
++    $exposed_form = array();
++    $exposed_input = array();
+     $exposed_form_state = array(
+-      'view' => &$view,
+-      'display' => &$view->display[$display_id],
++      'view' => $view,
++      'display' => $view->display[$display_id],
+     );
+ 
+-    $view->set_exposed_input($conf['exposed']);
++    if (isset($form_state['input']['exposed'])) {
++      $exposed_input =& $form_state['input']['exposed'];
++    }
++    elseif (!empty($conf['exposed'])) {
++      $exposed_input =& $conf['exposed'];
++    }
++
++    unset($exposed_input['submit']);
+ 
+     if (version_compare(views_api_version(), '3', '>=')) {
+       $exposed_form_state['exposed_form_plugin'] = $view->display_handler->get_plugin('exposed_form');
+     }
+-    $view->init_handlers();
+-    $exposed_form = array();
+-    $exposed_form = views_exposed_form($exposed_form, $exposed_form_state);
+ 
+-    $form['exposed'] = array(
+-      '#tree' => TRUE,
+-    );
++    $view->init_handlers();
++    $view->set_exposed_input($exposed_input);
+ 
+-    foreach ($exposed_form['#info'] as $id => $info) {
+-      $form['exposed'][$id] = array(
+-        '#type' => 'item',
+-        '#id' => 'views-exposed-pane',
+-      );
++    $exposed_form = views_exposed_form($exposed_form, $exposed_form_state);
+ 
+-      if (!empty($info['label'])) {
+-        $form['exposed'][$id]['#title'] = $info['label'];
+-      }
++    // Need to transform form submit button to usual form element to prevent
++    // submission of a whole form.
++    $exposed_form['submit']['#type'] = 'button';
++    $exposed_form['submit']['#ajax'] = ['callback' => 'views_content_views_panes_content_type_views_exposed'];
++    unset($exposed_form['submit']['#name']);
+ 
+-      if (!empty($info['operator']) && !empty($exposed_form[$info['operator']])) {
+-        $form['exposed'][$id][$info['operator']] = $exposed_form[$info['operator']];
+-        $form['exposed'][$id][$info['operator']]['#parents'] = array('exposed', $info['operator']);
+-        $form['exposed'][$id][$info['operator']]['#default_value'] = isset($conf['exposed'][$info['operator']]) ? $conf['exposed'][$info['operator']] : '';
++    foreach ($exposed_input as $id => $values) {
++      if (isset($exposed_form[$id])) {
++        $exposed_form[$id]['#parents'] = array('exposed', $id);
++        $exposed_form[$id]['#default_value'] = $values;
+       }
+-      $form['exposed'][$id][$info['value']] = $exposed_form[$info['value']];
+-      $form['exposed'][$id][$info['value']]['#parents'] = array('exposed', $info['value']);
+-      $form['exposed'][$id][$info['value']]['#default_value'] = isset($conf['exposed'][$info['value']]) ? $conf['exposed'][$info['value']] : '';
+     }
+-  }
+-
+-  // The exposed sort stuff doesn't fall into $exposed_form['#info'] so we
+-  // have to handle it separately.
+-  if (isset($exposed_form['sort_by'])) {
+-    $form['exposed']['sort_by'] = $exposed_form['sort_by'];
+-  }
+ 
+-  if (isset($exposed_form['sort_order'])) {
+-    $form['exposed']['sort_order'] = $exposed_form['sort_order'];
++    $form['exposed'] = $exposed_form + array('#tree' => TRUE);
+   }
+ 
+-  // Add the view object to the form to allow additional customization
++  // Add the view object to the form to allow additional customization.
+   $form_state['view'] = $view;
+ 
+   return $form;
+ }
+ 
+ /**
++ * {@inheritdoc}
++ *
++ * @internal
++ *
++ * @see views_content_views_panes_content_type_edit_form()
++ * @see ajax_form_callback()
++ */
++function views_content_views_panes_content_type_views_exposed(array $form, array &$form_state) {
++  ctools_include('modal');
++
++  // Restore title of the modal window.
++  if (isset($form_state['form_info']['order']['form'])) {
++    $form_state['title'] = $form_state['form_info']['order']['form'];
++  }
++
++  return array(
++    '#type' => 'ajax',
++    '#commands' => ctools_modal_form_render($form_state, $form),
++  );
++}
++
++/**
+  * Store form values in $conf.
+  */
+ function views_content_views_panes_content_type_edit_form_submit(&$form, &$form_state) {

@@ -1,0 +1,78 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the installation profile.
+ */
+
+define('QUEBEC_DEFAULT_THEME', 'parallel');
+define('QUEBEC_ADMIN_THEME', 'adminimal');
+
+/**
+ * Implements hook_install().
+ */
+function quebec_install() {
+  $account = user_load(1);
+
+  user_save($account, [
+    'first_name' => 'John',
+    'last_name' => 'Doe',
+  ]);
+
+  foreach ([
+    'admin_theme' => QUEBEC_ADMIN_THEME,
+    'theme_default' => QUEBEC_DEFAULT_THEME,
+    // Allow visitor account creation, but with administrative approval.
+    'user_register' => USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL,
+    'node_admin_theme' => TRUE,
+  ] as $variable => $value) {
+    variable_set($variable, $value);
+  }
+
+  // Enable/disable themes.
+  foreach ([
+    'enable' => [QUEBEC_DEFAULT_THEME, QUEBEC_ADMIN_THEME],
+    'disable' => ['bartik'],
+  ] as $action => $themes) {
+    call_user_func("theme_$action", $themes);
+  }
+
+  db_insert('block')
+    ->fields([
+      'module' => 'system',
+      'delta' => 'main',
+      'theme' => QUEBEC_DEFAULT_THEME,
+      'status' => 0,
+      'weight' => 0,
+      'region' => 'content',
+      'pages' => '',
+      'cache' => -1,
+    ])
+    ->execute();
+
+  // Enable default permissions for system roles.
+  foreach ([DRUPAL_ANONYMOUS_RID, DRUPAL_AUTHENTICATED_RID] as $rid) {
+    user_role_grant_permissions($rid, ['access content']);
+  }
+
+  foreach (file_md5_scan('public://defaults', ['jpg', 'jpeg', 'png', 'gif', 'svg', 'csv', 'txt', 'doc', 'xls', 'pdf', 'ppt', 'pps', 'odt', 'ods', 'odp', 'dsv']) as $file) {
+    file_usage_add($file, 'quebec', 'user', $account->uid);
+  }
+
+  if (function_exists('domain_default')) {
+    $default = domain_default(FALSE, FALSE);
+
+    if (!empty($default)) {
+      $t = get_t();
+
+      foreach ([
+        'union' => $t('Union'),
+      ] as $item => $name) {
+        domain_save([
+          'sitename' => $name,
+          'subdomain' => $default['subdomain'] . '/' . $item,
+          'machine_name' => $default['machine_name'] . '_' . $item,
+        ]);
+      }
+    }
+  }
+}

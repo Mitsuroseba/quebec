@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the View search results feature.
+ */
+
+include_once 'view_search_results.features.inc';

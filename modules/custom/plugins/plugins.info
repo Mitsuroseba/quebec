@@ -1,0 +1,12 @@
+name = Plugins
+hidden = TRUE
+core = 7.x
+php = 5.5
+
+autoload[ctools][] = ContentTypes
+autoload[ctools][] = Styles
+
+autoload[views][] = Handlers
+
+dependencies[] = ctools_api
+dependencies[] = file_md5

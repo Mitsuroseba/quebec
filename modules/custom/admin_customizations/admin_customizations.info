@@ -1,0 +1,5 @@
+name = Admin Customizations
+description = Customize administrative interface by adding necessary CSS/JS and/or theme-related hooks.
+core = 7.x
+
+hidden = TRUE

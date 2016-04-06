@@ -1,0 +1,13 @@
+.fieldset-wrapper {
+  display: table;
+}
+.fieldset-wrapper > p,
+.fieldset-wrapper .form-type-textfield {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.fieldset-wrapper > p,
+.fieldset-wrapper .form-type-textfield input {
+  font-size: 14px;
+}

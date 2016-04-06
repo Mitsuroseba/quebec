@@ -1,0 +1,4 @@
+name = Improved comment
+description = Allow to customize core comment.
+core = 7.x
+php = 5.4

@@ -1,0 +1,17 @@
+name = User
+core = 7.x
+package = Configs
+dependencies[] = ctools
+dependencies[] = features
+dependencies[] = field_standart_package
+dependencies[] = strongarm
+dependencies[] = text
+features[ctools][] = strongarm:strongarm:1
+features[features_api][] = api:2
+features[variable][] = user_picture_default
+features[variable][] = user_picture_dimensions
+features[variable][] = user_picture_file_size
+features[variable][] = user_picture_guidelines
+features[variable][] = user_picture_path
+features[variable][] = user_picture_style
+features[variable][] = user_pictures

@@ -1,0 +1,117 @@
+<?php
+/**
+ * @file
+ * Custom Field Formatters.
+ */
+
+define('FORMATTERS_TEMPLATABLE', 'templatable');
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function formatters_field_formatter_info() {
+  $formatters = [];
+
+  $formatters[FORMATTERS_TEMPLATABLE] = [
+    'label' => t('Templatable'),
+    'field types' => ['entityreference'],
+  ];
+
+  $formatters['media_oembed_thumbnail'] = [
+    'label' => t('Media oembed thumbnail'),
+    'field types' => ['image', 'file'],
+    'settings' => [
+      'media_oembed_thumbnail_image_style' => 'default',
+    ],
+  ];
+
+  return $formatters;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function formatters_theme(array $existing, $type, $theme, $path) {
+  $suggestions = [];
+
+  $suggestions['formatters'] = [
+    'render element' => 'elements',
+  ];
+
+  return $suggestions;
+}
+
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function formatters_field_formatter_settings_form(array $field, array $instance, $view_mode, array $form, array &$form_state) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+  $element = [];
+
+  switch ($display['type']) {
+    case 'media_oembed_thumbnail':
+      $element['media_oembed_thumbnail_image_style'] = [
+        '#title' => t('Thumbnail image style'),
+        '#type' => 'select',
+        '#default_value' => $settings['media_oembed_thumbnail_image_style'],
+        '#empty_option' => t('- None -'),
+        '#options' => image_style_options(FALSE, PASS_THROUGH),
+      ];
+      break;
+  }
+
+  return $element;
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function formatters_field_formatter_settings_summary(array $field, array $instance, $view_mode) {
+  $display = $instance['display'][$view_mode];
+  $settings = $instance['display'][$view_mode]['settings'];
+  $summary = [];
+
+  switch ($display['type']) {
+    case 'media_oembed_thumbnail':
+      $summary[] = $settings['media_oembed_thumbnail_image_style'];
+      break;
+  }
+
+  return t('Summary: @summary', [
+    '@summary' => implode('<br />', $summary),
+  ]);
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function formatters_field_formatter_view($entity_type, $entity, array $field, array $instance, $langcode, array $items, array $display) {
+  $settings = $display['settings'];
+  $elements = [];
+
+  switch ($display['type']) {
+    case FORMATTERS_TEMPLATABLE:
+      $elements[] = [
+        '#markup' => theme("{$display['module']}__{$display['type']}__{$field['field_name']}", [
+          'settings' => $settings,
+          'items' => $items,
+        ]),
+      ];
+      break;
+
+    case 'media_oembed_thumbnail':
+      foreach ($items as $delta => $item) {
+        if (!empty($item['metadata']['media_oembed_local_thumbnail_path'])) {
+          $elements[$delta] = [
+            '#theme'       => 'image_formatter',
+            '#item'        => ['uri' => $item['metadata']['media_oembed_local_thumbnail_path']],
+            '#image_style' => $display['settings']['media_oembed_thumbnail_image_style'],
+          ];
+        }
+      }
+      break;
+  }
+
+  return $elements;
+}

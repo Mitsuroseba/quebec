@@ -1,0 +1,58 @@
+diff --git a/facetapi.admin.inc b/facetapi.admin.inc
+index 9fb7022..d8c1fd9 100644
+--- a/facetapi.admin.inc
++++ b/facetapi.admin.inc
+@@ -522,6 +522,15 @@ function facetapi_facet_display_form($form, &$form_state, FacetapiAdapter $adapt
+     '#description' => t('The action to take when a facet has no items.'),
+   );
+ 
++  $form['widget']['display_count'] = array(
++    '#type' => 'checkbox',
++    '#prefix' => '<div class="facetapi-display-count-setting">',
++    '#suffix' => '</div>',
++    '#title' => t('Display count'),
++    '#description' => t('If checked, the number of matching items will be output in brackets.'),
++    '#default_value' => $facet_settings->settings['display_count'],
++  );
++
+   $form['widget']['facet_more_text'] = array(
+     '#type' => 'textfield',
+     '#prefix' => '<div class="facetapi-more-text-setting">',
+diff --git a/plugins/facetapi/adapter.inc b/plugins/facetapi/adapter.inc
+index 3fa3ee0..18efdce 100644
+--- a/plugins/facetapi/adapter.inc
++++ b/plugins/facetapi/adapter.inc
+@@ -779,6 +779,7 @@ abstract class FacetapiAdapter {
+         'sort_weight' => array(),
+         'sort_order' => array(),
+         'empty_behavior' => 'none',
++        'display_count' => TRUE,
+         'facet_more_text' => 'Show more',
+         'facet_fewer_text' => 'Show fewer',
+       );
+diff --git a/plugins/facetapi/widget_links.inc b/plugins/facetapi/widget_links.inc
+index 0ae49b3..89b7d0e 100644
+--- a/plugins/facetapi/widget_links.inc
++++ b/plugins/facetapi/widget_links.inc
+@@ -105,7 +105,6 @@ class FacetapiWidgetLinks extends FacetapiWidget {
+       $variables = array(
+         'text' => $item['#markup'],
+         'path' => $item['#path'],
+-        'count' => $item['#count'],
+         'options' => array(
+           'attributes' => $attributes,
+           'html' => $item['#html'],
+@@ -113,6 +112,13 @@ class FacetapiWidgetLinks extends FacetapiWidget {
+         ),
+       );
+ 
++      if ($settings['display_count']) {
++        $variables['count'] = $item['#count'];
++      }
++      else {
++        $variables['count'] = NULL;
++      }
++
+       // Adds the facetapi-zero-results class to items that have no results.
+       if (!$item['#count']) {
+         $variables['options']['attributes']['class'][] = 'facetapi-zero-results';

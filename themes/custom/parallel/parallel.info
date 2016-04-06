@@ -1,0 +1,18 @@
+name = Parallel Theme
+screenshot = parallel.jpg
+description = General Drupal theme with predefined improvements.
+core = 7.x
+
+; CSS
+;stylesheets[all][] = css/screen.css
+;stylesheets[print][] = css/print.css
+
+; JavaScript
+scripts[] = js/script.js
+
+; Regions
+regions[content] = Content
+regions[help] = Help
+
+; Set the default values for settings from the "theme-settings.php".
+;settings[name] = value

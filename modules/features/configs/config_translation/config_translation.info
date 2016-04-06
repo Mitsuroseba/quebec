@@ -1,0 +1,11 @@
+name = Config translation
+core = 7.x
+package = Configs
+dependencies[] = features
+dependencies[] = features_translations
+features[features_api][] = api:2
+features[translations_da][] = da:default
+features[translations_da][] = da:field
+features[translations_da][] = da:metatag
+features[translations_da][] = da:node
+project path = profiles/quebec/modules/features/configs

@@ -1,0 +1,15 @@
+name = Menu main menu
+core = 7.x
+package = Menus
+dependencies[] = features
+dependencies[] = menu
+features[features_api][] = api:2
+features[menu_custom][] = main-menu
+features[menu_links][] = main-menu_aktuelt:<front>
+features[menu_links][] = main-menu_baner:<front>
+features[menu_links][] = main-menu_book-tid:<front>
+features[menu_links][] = main-menu_faq:faq
+features[menu_links][] = main-menu_landsholdet:node
+features[menu_links][] = main-menu_nyheder:node
+features[menu_links][] = main-menu_tidsbestilling:node
+features[menu_links][] = main-menu_vlg-baner:node

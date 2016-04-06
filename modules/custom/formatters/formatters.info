@@ -1,0 +1,6 @@
+name = Field Formatters
+description = Custom field formmaters.
+core = 7.x
+php = 5.4
+
+hidden = TRUE

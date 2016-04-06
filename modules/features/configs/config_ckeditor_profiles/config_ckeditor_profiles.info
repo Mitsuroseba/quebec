@@ -1,0 +1,7 @@
+name = CKEditor profiles
+core = 7.x
+package = Configs
+features[ckeditor_profile][] = Advanced
+features[ckeditor_profile][] = Full
+features[features_api][] = api:2
+features_exclude[dependencies][ckeditor] = ckeditor

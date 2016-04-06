@@ -1,0 +1,12 @@
+name = Config security
+core = 7.x
+package = Configs
+dependencies[] = ctools
+dependencies[] = strongarm
+features[ctools][] = strongarm:strongarm:1
+features[features_api][] = api:2
+features[variable][] = seckit_clickjacking
+features[variable][] = seckit_csrf
+features[variable][] = seckit_ssl
+features[variable][] = seckit_various
+features[variable][] = seckit_xss

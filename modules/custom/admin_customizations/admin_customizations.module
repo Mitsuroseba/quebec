@@ -1,0 +1,18 @@
+<?php
+/**
+ * @file
+ * Admin Customizations.
+ */
+
+/**
+ * Implements hook_page_alter().
+ */
+function admin_customizations_page_alter(array &$page) {
+  if (path_is_admin(current_path())) {
+    $theme_path = drupal_get_path('theme', variable_get('theme_default'));
+
+    foreach (['css', 'js'] as $type) {
+      $page['content']['#attached'][$type][] = "$theme_path/$type/admin.$type";
+    }
+  }
+}

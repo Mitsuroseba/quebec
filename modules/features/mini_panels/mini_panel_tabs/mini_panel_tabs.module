@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Mini panel tabs feature.
+ */
+
+include_once 'mini_panel_tabs.features.inc';

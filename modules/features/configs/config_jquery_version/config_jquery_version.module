@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the jQuery version feature.
+ */
+
+include_once 'config_jquery_version.features.inc';

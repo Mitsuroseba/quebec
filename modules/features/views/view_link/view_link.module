@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Link feature.
+ */
+
+include_once 'view_link.features.inc';
