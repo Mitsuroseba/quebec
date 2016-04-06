@@ -1,0 +1,11 @@
+name = Simple Quiz
+package = FFW
+core = 7.x
+
+dependencies[] = node
+dependencies[] = text
+dependencies[] = range
+dependencies[] = entity
+dependencies[] = number
+dependencies[] = field_group
+dependencies[] = field_collection

@@ -1,0 +1,41 @@
+<?php
+/**
+ * @file
+ * Simple Quiz installation and updates.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function squiz_install() {
+  squiz_load_include('fields');
+  squiz_create_fields(squiz_fields_schema('node', 'squiz'));
+
+  squiz_configure_content_type();
+}
+
+/**
+ * Default values for content type.
+ *
+ * @internal
+ */
+function squiz_configure_content_type() {
+  foreach ([
+    'menu_options' => [],
+    'node_options' => ['status'],
+    'node_preview' => FALSE,
+    'node_submitted' => FALSE,
+    'panelizer_defaults_node' => [
+      'status' => TRUE,
+      'view modes' => [
+        'page_manager' => [
+          'status' => TRUE,
+          'choice' => FALSE,
+          'default' => TRUE,
+        ],
+      ],
+    ],
+  ] as $variable => $value) {
+    variable_set($variable . '_squiz', $value);
+  }
+}

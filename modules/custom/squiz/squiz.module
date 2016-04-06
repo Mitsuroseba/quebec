@@ -1,0 +1,203 @@
+<?php
+/**
+ * @file
+ * Simple Quiz.
+ */
+
+// Calculates the sum of answers.
+define('SQUIZ_QUESTION_TYPE_SUM', 1);
+// Calculates which of the values in the test answers occur more often.
+define('SQUIZ_QUESTION_TYPE_MAX', 2);
+
+squiz_load_include('common');
+
+/**
+ * Implements hook_field_formatter_info().
+ *
+ * @internal
+ * @inheritdoc
+ */
+function squiz_field_formatter_info() {
+  $info = [];
+
+  $info['field_collection_squiz_form'] = [
+    'label' => t('Simple Quiz'),
+    'field types' => ['field_collection'],
+  ];
+
+  return $info;
+}
+
+/**
+ * Implements hook_element_info().
+ *
+ * @internal
+ * @inheritdoc
+ */
+function squiz_element_info() {
+  $info = [];
+
+  $info['squiz_items'] = [
+    '#tree' => TRUE,
+  ];
+
+  $info['squiz_item'] = [
+    '#input' => TRUE,
+    '#process' => ['form_process_radios'],
+    // Necessary amount of answers to show a question (0 - always show).
+    '#available' => 0,
+  ];
+
+  $info['squiz_result'] = [
+    '#result' => '',
+    '#message' => '',
+  ];
+
+  foreach ($info as $type => $data) {
+    $info[$type]['#theme'] = str_replace('_', '__', $type);
+  }
+
+  return $info;
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * @internal
+ * @inheritdoc
+ */
+function squiz_theme(array $existing, $type, $theme, $path) {
+  $info = [];
+
+  $info['squiz'] = [
+    'render element' => 'elements',
+  ];
+
+  foreach (file_scan_directory($path, '/\.tpl\.php$/') as $path => $file) {
+    // Chop off the remaining extensions if there are any. $template
+    // already has the rightmost extension removed, but there might
+    // still be more, such as with .tpl.php, which still has .tpl in
+    // $template at this point.
+    $dot = strpos($file->filename, '.');
+
+    if (FALSE !== $dot) {
+      $file->filename = substr($file->filename, 0, $dot);
+    }
+
+    $info[strtr($file->filename, '-', '_')] = [
+      'path' => dirname($path),
+      'template' => $file->filename,
+      'render element' => 'elements',
+    ];
+  }
+
+  return $info;
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ *
+ * @internal
+ * @inheritdoc
+ */
+function squiz_field_formatter_view(
+  $entity_type, $entity, array $field, array $instance, $langcode, array $items, array $display
+) {
+  $element = [];
+
+  switch ($display['type']) {
+    case 'field_collection_squiz_form':
+      // @link admin/structure/field-collections/field_squiz
+      foreach (squiz_field_collection_items($items) as $delta => $quiz) {
+        // Increase array indexes by 1.
+        array_unshift($quiz->squiz_variants, '');
+        unset($quiz->squiz_variants[0]);
+
+        $items[$delta] = [
+          'options' => $quiz->squiz_variants,
+          'question' => $quiz->squiz_question,
+          'available' => $quiz->squiz_available,
+        ];
+      }
+
+      if (!empty($items)) {
+        $results = [];
+
+        if (!empty($entity->squiz_results)) {
+          $results = squiz_field_collection_items($entity->squiz_results[$langcode]);
+        }
+
+        $element = drupal_get_form('squiz_items_form', $items, $results, $entity_type, $entity, squiz_load_include('form'));
+      }
+      break;
+  }
+
+  return $element;
+}
+
+/**
+ * Implements hook_form_alter().
+ *
+ * @internal
+ * @inheritdoc
+ */
+function squiz_form_alter(array &$form, array &$form_state, $form_id) {
+  if (squiz_form_is_valid($form)) {
+    list($id, $vid) = entity_extract_ids($form['#entity_type'], $form['#entity']);
+
+    $type = squiz_form_quiz_type($form, $form_state);
+    // Some fields should be hidden on SQUIZ_QUESTION_TYPE_MAX type.
+    $access = SQUIZ_QUESTION_TYPE_MAX !== $type;
+
+    squiz_form_field_collection_iterator($form['squiz_items'], function (&$item, $current, $total) use ($access) {
+      $item['squiz_available']['#access'] = $access;
+
+      // @codingStandardsIgnoreStart
+      if (!$access && $current === $total) {
+        $item['squiz_variants'][LANGUAGE_NONE]['#description'] = t('This type of quiz assumes that this question will be hidden by default. It will available only if user will have an equal number of answers in two or more groups.');
+      }
+      // @codingStandardsIgnoreEnd
+    });
+
+    squiz_form_field_collection_iterator($form['squiz_results'], function (&$item) use ($access) {
+      $item['squiz_question_value']['#access'] = !$item['squiz_range']['#access'] = $access;
+    });
+
+    $form['squiz_type'][LANGUAGE_NONE] = array_merge($form['squiz_type'][LANGUAGE_NONE], [
+      '#ajax' => squiz_form_wrap($form, $form_id),
+      // Unable to change the type when entity was saved.
+      '#access' => NULL === $id && NULL === $vid,
+      '#default_value' => $type,
+    ]);
+  }
+}
+
+/**
+ * Include module files.
+ *
+ * @param string $type
+ *   File type.
+ * @param string $directory
+ *   Directory name.
+ * @param string $extension
+ *   File extension.
+ *
+ * @return string
+ *   Full path to file.
+ */
+function squiz_load_include($type, $directory = 'includes', $extension = 'inc') {
+  $file = sprintf("%s/$directory/squiz.$type.$extension", drupal_get_path('module', 'squiz'));
+
+  if (file_exists($file)) {
+    // Allow to require only files with PHP code.
+    if ('inc' === $extension) {
+      // @codingStandardsIgnoreStart
+      require_once $file;
+      // @codingStandardsIgnoreEnd
+    }
+
+    return $file;
+  }
+
+  return '';
+}
